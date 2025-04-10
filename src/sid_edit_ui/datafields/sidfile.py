@@ -141,7 +141,7 @@ class Flags(BaseModel):
         ]
         value = 0
         for bit in reversed(reversed_field):
-            value = value << 1 + bit
+            value = (value << 1) + bit
         return as_word(value)
 
     @classmethod
