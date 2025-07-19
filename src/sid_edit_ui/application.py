@@ -1,5 +1,12 @@
-def main():
-    print(f"Hello from {__file__}:main()")
+from nicegui import ui
 
-if __name__ == '__main__':
+
+def main():
+
+    ui.label("Hello NiceGUI!")
+    ui.button("BUTTON", on_click=lambda: ui.notify("button was pressed"))
+
+    ui.run()
+
+if __name__ in {"__main__", "__mp_main__"}:
     main()
