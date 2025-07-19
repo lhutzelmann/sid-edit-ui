@@ -1,6 +1,6 @@
 import pathlib
 
-from sid_edit_ui.datafields.sidfile import SIDFile
+from sid_file_format.sidfile import SIDFile
 
 if __name__ == "__main__":
     sid_file_path = pathlib.Path("Metal_Dust_Title_Remix.sid")
