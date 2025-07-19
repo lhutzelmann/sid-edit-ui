@@ -1,0 +1,16 @@
+[project]
+name = "sid-file-format"
+version = "0.1.0"
+description = "Implementation of the SID file format"
+readme = "README.md"
+authors = [
+    { name = "Lars Hutzelmann", email = "lhutzelmann@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.10.6",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.0,<0.9"]
+build-backend = "uv_build"
