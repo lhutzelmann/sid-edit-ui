@@ -1,0 +1,41 @@
+from htmy import Component, ComponentType, Context, component, html
+
+from holm import Metadata
+
+
+@component
+def layout(children: ComponentType, context: Context) -> Component:
+    """Root layout wrapping all pages."""
+    metadata = Metadata.from_context(context)
+
+    return (
+        html.DOCTYPE.html,
+        html.html(
+            html.head(
+                html.title(metadata.get("title", "SID Edit UI")),
+                html.meta(charset="utf-8"),
+                html.meta(
+                    name="viewport", content="width=device-width, initial-scale=1"
+                ),
+                html.link(  # Use PicoCSS to add some default styling.
+                    rel="stylesheet",
+                    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css",
+                ),
+            ),
+            html.body(
+                html.header(
+                    html.nav(
+                        html.ul(
+                            html.li(html.a("Main", href="/")),
+                            html.li(html.a("Editor", href="/editor")),
+                            html.li(html.a("About", href="/about")),
+                        )
+                    ),
+                    class_="container",
+                ),
+                html.main(children, class_="container"),
+                html.footer(html.p("V1.0 by The Blue Ninja"), class_="container"),
+                class_="container-fluid",
+            ),
+        ),
+    )
