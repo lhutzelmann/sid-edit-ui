@@ -208,7 +208,7 @@ class SIDFile(BaseModel):
         description="Speed flags for the songs. See sid file format description for details.",
     )
     name: constr(min_length=0, max_length=32) = Field(
-        default="SONGNAME",
+        default="Song Name",
         description="Song name.",
     )
     author: constr(min_length=0, max_length=32) = Field(
@@ -276,7 +276,11 @@ class SIDFile(BaseModel):
             ):
                 raise ValueError("RSID does not support PlaySID samples.")
         else:
-            if self.version > 1 and self.flags.psid_specific == PSIDSpecific.C64_BASIC:
+            if (
+                self.version > 1
+                and self.flags
+                and self.flags.psid_specific == PSIDSpecific.C64_BASIC
+            ):
                 raise ValueError("PSID does not support Basic files.")
         if self.version == 1:
             if (

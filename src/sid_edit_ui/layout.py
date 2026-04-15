@@ -1,6 +1,5 @@
-from htmy import Component, ComponentType, Context, component, html
-
 from holm import Metadata
+from htmy import Component, ComponentType, Context, component, html
 
 
 @component
@@ -17,25 +16,26 @@ def layout(children: ComponentType, context: Context) -> Component:
                 html.meta(
                     name="viewport", content="width=device-width, initial-scale=1"
                 ),
-                html.link(  # Use PicoCSS to add some default styling.
+                html.link(  # Use mu css in blue
                     rel="stylesheet",
-                    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css",
+                    href="/static/mu.blue.css",
                 ),
+                html.script(src="https://unpkg.com/htmx.org@2.0.7"),
             ),
             html.body(
                 html.header(
                     html.nav(
                         html.ul(
-                            html.li(html.a("Main", href="/")),
-                            html.li(html.a("Editor", href="/editor")),
+                            html.li(html.a("Home", href="/")),
+                            html.li(html.a("Edit", href="/editor")),
                             html.li(html.a("About", href="/about")),
-                        )
+                        ),
+                        hx_boost="true",
+                        class_="container",
                     ),
-                    class_="container",
                 ),
-                html.main(children, class_="container"),
+                html.main(children, class_="container", id_="main"),
                 html.footer(html.p("V1.0 by The Blue Ninja"), class_="container"),
-                class_="container-fluid",
             ),
         ),
     )
