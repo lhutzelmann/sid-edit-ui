@@ -1,82 +1,38 @@
-# sid-edit-ui
-A simple cross platform UI to edit C64 SID files
+# sid-edit-ui / SEI
+A simple cross-platform UI to edit C64 SID files.
 
-## Run the app
+**This project is work in progress, unfinished and currently not suitable for anything. You have been warned.**
 
-### uv
+After saying that, the sid-file-format (packages/sid-file-format) package may be of some value for somebody who wants
+to have a proper, valid object representation of SID music files from Commodore 64/128 computers.
 
-Run as a desktop app:
+Currently only the regular specification is implemented (v1-v4) in all its variants, missing out the "SID file format+"
+(v4E).
 
-```
-uv run flet run
-```
+The `load_and_save_sid_file.py` script already demonstrates loss-less round-trip editing with loading and saving
+SID files.
 
-Run as a web app:
+The goal of this project is to create a cross-platform UI. I am currently experimenting with different web
+frameworks to achieve that.
+The vision is to have a **minimalistic, compact local web application running on anything with modern
+Python and a web browser**.
 
-```
-uv run flet run --web
-```
+## Set up a dev environment
 
-### Poetry
+For development and running you need `uv` and `Python 3.12+`.
 
-Install dependencies from `pyproject.toml`:
+Clone or download the repository from GitHub and create a virtual environment with uv:
 
-```
-poetry install
-```
-
-Run as a desktop app:
-
-```
-poetry run flet run
+```shell
+cd sid-edit-ui
+uv sync
 ```
 
-Run as a web app:
+## Run the application
 
-```
-poetry run flet run --web
-```
-
-For more details on running the app, refer to the [Getting Started Guide](https://flet.dev/docs/getting-started/).
-
-## Build the app
-
-### Android
-
-```
-flet build apk -v
+```shell
+uv run SEI
 ```
 
-For more details on building and signing `.apk` or `.aab`, refer to the [Android Packaging Guide](https://flet.dev/docs/publish/android/).
-
-### iOS
-
-```
-flet build ipa -v
-```
-
-For more details on building and signing `.ipa`, refer to the [iOS Packaging Guide](https://flet.dev/docs/publish/ios/).
-
-### macOS
-
-```
-flet build macos -v
-```
-
-For more details on building macOS package, refer to the [macOS Packaging Guide](https://flet.dev/docs/publish/macos/).
-
-### Linux
-
-```
-flet build linux -v
-```
-
-For more details on building Linux package, refer to the [Linux Packaging Guide](https://flet.dev/docs/publish/linux/).
-
-### Windows
-
-```
-flet build windows -v
-```
-
-For more details on building Windows package, refer to the [Windows Packaging Guide](https://flet.dev/docs/publish/windows/).
+Then you can open `http://localhost:8000` in your Web browser and see what is already implemented and what is still
+missing.

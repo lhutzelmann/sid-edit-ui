@@ -22,7 +22,8 @@ dev = [
 ]
 
 [project.scripts]
-sid_edit_ui = "sid_edit_ui.application:main"
+sid_edit_ui = "sid_edit_ui.run:main"
+SEI = "sid_edit_ui.run:main"
 
 [tool.uv.sources]
 sid-file-format = { workspace = true }
@@ -32,26 +33,8 @@ members = [
     "packages/sid-file-format",
 ]
 
-[tool.flet]
-# org name in reverse domain name notation, e.g. "com.mycompany".
-# Combined with project.name to build bundle ID for iOS and Android apps
-org = "org.lhutzelmann"
-
-# project display name that is used as an app title on Android and iOS home screens,
-# shown in window titles and about app dialogs on desktop.
-product = "SID Edit UI"
-
-# company name to display in about app dialogs
-company = "lhutzelmann"
-
-# copyright text to display in about app dialogs
-copyright = "Copyright (C) 2025 by the public domain"
-
-[tool.flet.app]
-path = "src"
-
 [tool.taskipy.tasks]
-run = { cmd="uvicorn sid_edit_ui.main:app --reload"}
+run = { cmd="sid_edit_ui"}
 
 [build-system]
 requires = ["uv_build>=0.8.0,<0.9.0"]
