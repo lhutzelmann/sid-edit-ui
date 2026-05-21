@@ -2,6 +2,8 @@ from collections.abc import Sequence
 
 from htmy import XBool, html
 
+from sid_edit_ui.utils import c64_video_codes_to_unicode
+
 
 def input_field(
     name: str, data: dict, label: str, placeholder: str, type_: str = "text"
@@ -95,22 +97,28 @@ def hex_display(
     label: str = "C64 Data",
     max_bytes: int = 4096,
 ):
-    raw = data.get("c64_data", "")
-    if isinstance(raw, str):
-        hex_str = raw
-    elif isinstance(raw, bytes):
+    raw = data.get("c64_data", b"")
+    if isinstance(raw, bytes):
         hex_str = raw.hex()
+        raw_bytes = raw
+    elif isinstance(raw, str):
+        hex_str = raw
+        raw_bytes = bytes.fromhex(raw)
     else:
         hex_str = ""
+        raw_bytes = b""
 
     pairs = [hex_str[i : i + 2] for i in range(0, len(hex_str), 2)]
     truncated = len(pairs) > max_bytes
     if truncated:
         pairs = pairs[:max_bytes]
+        raw_bytes = raw_bytes[:max_bytes]
 
-    lines = [
-        " ".join(pairs[i : i + 16]) for i in range(0, len(pairs), 16)
-    ]
+    lines = []
+    for i in range(0, len(pairs), 16):
+        byte_values = " ".join(pairs[i : i + 16])
+        ascii_display = c64_video_codes_to_unicode(raw_bytes[i : i + 16])
+        lines.append(f"{byte_values} : {ascii_display}")
     text = "\n".join(lines)
     if truncated:
         text += "\n..."

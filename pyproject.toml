@@ -35,6 +35,7 @@ members = [
 
 [tool.taskipy.tasks]
 run = { cmd="sid_edit_ui"}
+test = { cmd="pytest"}
 
 [build-system]
 requires = ["uv_build>=0.8.0,<0.9.0"]
