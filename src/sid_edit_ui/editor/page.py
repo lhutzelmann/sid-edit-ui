@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import Request
+from holm.modules._layout import without_layout
 from htmy import Component, html
 
 from sid_edit_ui.components import (
@@ -138,6 +139,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                             (2, "MOS 8580"),
                             (3, "MOS Both"),
                         ],
+                        style_="min-width:200px",
                     ),
                     number_field("start_page", flat, "Start Page", min=0, max=255),
                     number_field("page_length", flat, "Page Length", min=0, max=255),
@@ -154,6 +156,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                             (2, "MOS 8580"),
                             (3, "MOS Both"),
                         ],
+                        style_="min-width:200px",
                     ),
                     number_field(
                         "second_sid_address",
@@ -175,6 +178,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                             (2, "MOS 8580"),
                             (3, "MOS Both"),
                         ],
+                        style_="min-width:200px",
                     ),
                     number_field(
                         "third_sid_address",
@@ -184,11 +188,11 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                         max=255,
                     ),
                 ),
-                hex_display(data),
                 html.div(
                     html.button("Save", type="submit", class_="btn btn-sm"),
                     style="margin-top:0.5rem;",
                 ),
+                hex_display(data),
                 method="POST",
                 hx_post=".",
                 hx_target="#main",
@@ -261,4 +265,7 @@ async def handle_submit(
             save_path = None
         if save_path:
             repo.save(save_path)
-    return page_content(result.sid_file, repo.file_name)
+    content = page_content(result.sid_file, repo.file_name)
+    if request.headers.get("hx-request"):
+        return without_layout(content)
+    return content

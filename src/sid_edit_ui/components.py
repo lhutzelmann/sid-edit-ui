@@ -26,6 +26,7 @@ def select_field(
     label: str,
     options: Sequence[tuple[int | str, str]],
     class_: str = "input-sm",
+    style_: str = "",
 ):
     current = str(data.get(name, ""))
     return html.div(
@@ -37,6 +38,7 @@ def select_field(
             ),
             name=name,
             class_=class_,
+            style=style_,
         ),
     )
 
