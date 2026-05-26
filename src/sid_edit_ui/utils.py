@@ -23,3 +23,7 @@ for _ in range(26):
 
 def c64_video_codes_to_unicode(data: bytes) -> str:
     return "".join(_C64_CHARMAP[b & 0x7F] for b in data)
+
+
+def int_from_c64_bytes(value: bytes) -> int:
+    return int.from_bytes(value, byteorder="little")

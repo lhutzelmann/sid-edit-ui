@@ -1,0 +1,40 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "agent": {
+    "editor": {
+      "description": "Works on the SID edit UI web app (src/sid_edit_ui/). Knows the holm/HTMX/FastAPI stack and the component-based UI patterns used.",
+      "mode": "subagent",
+      "model": "deepseek/deepseek-v4-flash",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow"
+      }
+    },
+    "sid-format": {
+      "description": "Works on the sid-file-format library (packages/sid-file-format/src/sid_file_format/). Knows SID binary format structures.",
+      "mode": "subagent",
+      "model": "deepseek/deepseek-v4-flash",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow"
+      }
+    },
+    "tester": {
+      "description": "Runs and fixes tests using pytest. Knows the test patterns in tests/.",
+      "mode": "subagent",
+      "model": "deepseek/deepseek-v4-flash",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow"
+      }
+    }
+  }
+}

@@ -1,6 +1,9 @@
 from enum import IntEnum
+from pathlib import Path
 
 from sid_edit_ui.editor.page import _flatten_flags
+
+_SID_FILE = Path(__file__).parent / "data" / "Metal_Dust_Title_Remix.sid"
 
 
 class _MusPlayer(IntEnum):
@@ -207,11 +210,9 @@ def test_flatten_flags_preserves_other_keys():
 
 def test_flatten_flags_with_live_sid_file():
     """Reproduce the exact bug scenario: load Metal_Dust, check flattened values."""
-    from pathlib import Path
     from sid_file_format.sidfile import SIDFile
 
-    sid_path = Path("scripts/Metal_Dust_Title_Remix.sid")
-    sid = SIDFile.from_sid(sid_path.read_bytes())
+    sid = SIDFile.from_sid(_SID_FILE.read_bytes())
     data = sid.model_dump()
     flat = _flatten_flags(data)
 
