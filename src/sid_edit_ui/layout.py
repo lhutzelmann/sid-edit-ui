@@ -27,6 +27,7 @@ def layout(children: ComponentType, context: Context) -> Component:
                     html.nav(
                         html.ul(
                             html.li(html.a("Home", href="/")),
+                            html.li(html.a("File", href="/file")),
                             html.li(html.a("Edit", href="/editor")),
                             html.li(html.a("About", href="/about")),
                         ),

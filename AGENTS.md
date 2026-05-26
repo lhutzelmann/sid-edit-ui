@@ -32,6 +32,10 @@ sid-edit-ui/
 │   ├── layout.py            # Root HTML layout
 │   ├── page.py              # Home page
 │   ├── components.py        # Shared components
+│   ├── file/                # File management page
+│   │   ├── page.py
+│   │   ├── actions.py
+│   │   └── handlers.py
 │   ├── editor/              # SID editor pages
 │   │   ├── page.py
 │   │   └── actions.py

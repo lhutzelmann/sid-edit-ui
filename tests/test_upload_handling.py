@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sid_edit_ui.editor.handlers import (
+from sid_edit_ui.file.handlers import (
     _make_prg_update,
     _make_data_update,
     handle_upload,
