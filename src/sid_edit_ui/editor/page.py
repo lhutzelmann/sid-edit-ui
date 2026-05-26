@@ -57,6 +57,16 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                 hx_swap="innerHTML",
             ),
             html.form(
+                html.input_(type="file", name="file", accept=".sid"),
+                html.button("Upload file", type="submit", class_="btn btn-sm"),
+                method="POST",
+                enctype="multipart/form-data",
+                hx_post="upload-file",
+                hx_target="#main",
+                hx_swap="innerHTML",
+                style="margin-top:0.5rem;",
+            ),
+            html.form(
                 field_block(
                     "Format & Version",
                     select_field(

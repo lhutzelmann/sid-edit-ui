@@ -24,3 +24,6 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="seu_", env_file=("/etc/.env", ".env"), env_file_encoding="utf-8"
     )
+
+
+settings = Settings()
