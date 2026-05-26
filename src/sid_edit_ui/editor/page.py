@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 
 from fastapi import Request
@@ -12,6 +13,7 @@ from sid_edit_ui.components import (
     select_field,
 )
 from sid_edit_ui.repositories.sid_repository import UpdateResult, DependsSidFileRepo
+from sid_edit_ui.settings import settings
 from sid_file_format.sidfile import SIDFile
 
 
@@ -194,7 +196,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                 ),
                 hex_display(data),
                 html.div(
-                    html.button("Submit", type="submit", class_="btn btn-sm"),
+                    html.button("Save", type="submit", class_="btn btn-sm"),
                     style="margin-top:0.5rem;",
                 ),
                 method="POST",
@@ -260,4 +262,13 @@ async def handle_submit(
     if result.errors:
         for field, message in result.errors.items():
             print(f"{field}: {message}")
+    else:
+        if repo.file_name and repo.file_name.endswith(".sid"):
+            save_path = repo.file_path
+        elif repo.file_name:
+            save_path = settings.upload_dir / (Path(repo.file_name).stem + ".sid")
+        else:
+            save_path = None
+        if save_path:
+            repo.save(save_path)
     return page_content(result.sid_file, repo.file_name)
