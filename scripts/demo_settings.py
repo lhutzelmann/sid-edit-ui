@@ -3,7 +3,7 @@ from pathlib import Path
 
 from sid_edit_ui.settings import Settings
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     file_path = Path(__file__)
     scripts_dir = file_path.parent
     project_dir = scripts_dir.parent

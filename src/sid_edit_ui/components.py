@@ -32,9 +32,7 @@ def select_field(
         html.label(label),
         html.select(
             *(
-                html.option(
-                    text, value=str(v),                     selected=XBool(str(v) == current)
-                )
+                html.option(text, value=str(v), selected=XBool(str(v) == current))
                 for v, text in options
             ),
             name=name,
@@ -136,7 +134,9 @@ def field_block(title: str, *children, vertical: bool = False):
         else "display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end;"
     )
     return html.div(
-        html.strong(title, style="display:block;margin-bottom:0.5rem;font-size:0.9rem;"),
+        html.strong(
+            title, style="display:block;margin-bottom:0.5rem;font-size:0.9rem;"
+        ),
         html.div(*children, style=flex_style),
         style=(
             "border:1px solid #d0d0d0;border-radius:8px;padding:1rem;"

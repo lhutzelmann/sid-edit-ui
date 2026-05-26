@@ -1,12 +1,17 @@
 from pathlib import Path
 
-from sid_edit_ui.editor.handlers import _make_prg_update, _make_data_update, handle_upload
+from sid_edit_ui.editor.handlers import (
+    _make_prg_update,
+    _make_data_update,
+    handle_upload,
+)
 from sid_edit_ui.repositories.sid_repository import SIDFileRepository
 
 _SID_FILE = Path(__file__).parent / "data" / "Metal_Dust_Title_Remix.sid"
 
 
 # -- _make_prg_update unit tests --
+
 
 def test_make_prg_update_uses_little_endian_address():
     content = b"\x00\x10\xa9\x00\x8d\x18\xd0\x60"
@@ -41,6 +46,7 @@ def test_make_prg_update_no_load_address():
 
 # -- _make_data_update unit tests --
 
+
 def test_make_data_update_uses_fixed_0x1000():
     content = b"\x00\x10\xa9\x00\x8d\x18\xd0\x60"
     result = _make_data_update(content, "music.data")
@@ -70,6 +76,7 @@ def test_make_data_update_address_independent_of_content():
 
 
 # -- handle_upload integration tests --
+
 
 def test_handle_upload_sid_writes_file_and_loads(tmp_path):
     sid_bytes = _SID_FILE.read_bytes()
@@ -138,8 +145,12 @@ def test_handle_upload_data_writes_file_and_updates_repo(tmp_path):
 
 def test_handle_upload_sid_calls_load_and_not_init(mocker, tmp_path):
     sid_bytes = _SID_FILE.read_bytes()
-    mock_load = mocker.patch("sid_edit_ui.repositories.sid_repository.SIDFileRepository.load")
-    mock_init = mocker.patch("sid_edit_ui.repositories.sid_repository.SIDFileRepository.init")
+    mock_load = mocker.patch(
+        "sid_edit_ui.repositories.sid_repository.SIDFileRepository.load"
+    )
+    mock_init = mocker.patch(
+        "sid_edit_ui.repositories.sid_repository.SIDFileRepository.init"
+    )
 
     handle_upload(sid_bytes, "song.sid", SIDFileRepository(), tmp_path)
 
@@ -151,8 +162,12 @@ def test_handle_upload_sid_calls_load_and_not_init(mocker, tmp_path):
 
 def test_handle_upload_prg_calls_init_and_not_load(mocker, tmp_path):
     content = b"\x00\x10\xa9\x00"
-    mock_init = mocker.patch("sid_edit_ui.repositories.sid_repository.SIDFileRepository.init")
-    mock_load = mocker.patch("sid_edit_ui.repositories.sid_repository.SIDFileRepository.load")
+    mock_init = mocker.patch(
+        "sid_edit_ui.repositories.sid_repository.SIDFileRepository.init"
+    )
+    mock_load = mocker.patch(
+        "sid_edit_ui.repositories.sid_repository.SIDFileRepository.load"
+    )
 
     handle_upload(content, "tune.prg", SIDFileRepository(), tmp_path)
 

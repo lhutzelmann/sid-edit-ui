@@ -148,9 +148,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                         ],
                     ),
                     number_field("start_page", flat, "Start Page", min=0, max=255),
-                    number_field(
-                        "page_length", flat, "Page Length", min=0, max=255
-                    ),
+                    number_field("page_length", flat, "Page Length", min=0, max=255),
                 ),
                 field_block(
                     "Second SID",
@@ -209,7 +207,13 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
 
 
 def _parse_hex(val: str) -> int:
-    val = val.strip().replace("$", "").replace("0x", "").replace("0X", "").replace("#", "")
+    val = (
+        val.strip()
+        .replace("$", "")
+        .replace("0x", "")
+        .replace("0X", "")
+        .replace("#", "")
+    )
     return int(val, 16) if val else 0
 
 

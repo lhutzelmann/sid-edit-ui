@@ -1,10 +1,9 @@
 from pathlib import Path
-from typing import Any, Annotated
+from typing import Annotated, Any
 
 from fastapi import Depends
-from pydantic import ValidationError, BaseModel
-
-from sid_file_format.sidfile import SIDFile, Flags
+from pydantic import BaseModel, ValidationError
+from sid_file_format.sidfile import Flags, SIDFile
 
 
 class UpdateResult(BaseModel):
@@ -12,19 +11,16 @@ class UpdateResult(BaseModel):
     errors: dict[str, str] | None
 
 
-
-
-
 class SIDFileRepository(BaseModel):
-    file_name: str|None = None
+    file_name: str | None = None
     file_path: Path | None = None
     sid_file: SIDFile = SIDFile(
-            flags=Flags(),
-            start_page=0,
-            page_length=0,
-            second_sid_address=0,
-            third_sid_address=0,
-        )
+        flags=Flags(),
+        start_page=0,
+        page_length=0,
+        second_sid_address=0,
+        third_sid_address=0,
+    )
 
     def init(self):
         self.sid_file = SIDFile(
@@ -67,7 +63,9 @@ class SIDFileRepository(BaseModel):
 
 sid_file_repo: SIDFileRepository = SIDFileRepository()
 
+
 def get_sid_file_repo() -> SIDFileRepository:
     return sid_file_repo
+
 
 DependsSidFileRepo = Annotated[SIDFileRepository, Depends(get_sid_file_repo)]
