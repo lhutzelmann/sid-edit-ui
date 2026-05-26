@@ -18,7 +18,16 @@ class UpdateResult(BaseModel):
 class SIDFileRepository(BaseModel):
     file_name: str|None = None
     file_path: Path | None = None
-    sid_file: SIDFile =SIDFile(
+    sid_file: SIDFile = SIDFile(
+            flags=Flags(),
+            start_page=0,
+            page_length=0,
+            second_sid_address=0,
+            third_sid_address=0,
+        )
+
+    def init(self):
+        self.sid_file = SIDFile(
             flags=Flags(),
             start_page=0,
             page_length=0,

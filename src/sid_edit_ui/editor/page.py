@@ -57,7 +57,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                 hx_swap="innerHTML",
             ),
             html.form(
-                html.input_(type="file", name="file", accept=".sid"),
+                html.input_(type="file", name="file", accept=".sid,.prg,.data"),
                 html.button("Upload file", type="submit", class_="btn btn-sm"),
                 method="POST",
                 enctype="multipart/form-data",
