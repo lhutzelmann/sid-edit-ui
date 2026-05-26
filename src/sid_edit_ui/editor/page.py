@@ -49,20 +49,12 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
         html.div(
             html.p(file_name if file_name else ""),
             html.button(
-                "Load",
+                "Reload .sid file",
                 class_="btn btn-sm",
                 hx_post="load-sid-file",
                 hx_trigger="click",
                 hx_target="#main",
                 hx_swap="innerHTML",
-            ),
-            html.button(
-                "Save",
-                class_="btn btn-sm",
-                hx_post="load-sid-file",
-                hx_trigger="click",
-                hx_target="#main",
-                hx_swap="none",
             ),
             html.form(
                 field_block(

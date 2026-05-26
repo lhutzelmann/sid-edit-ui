@@ -1,4 +1,4 @@
-# sid-edit-ui / SEI
+# sid-edit-ui / SEU
 A simple cross-platform UI to edit C64 SID files.
 
 **This project is work in progress, unfinished and currently not suitable for anything. You have been warned.**
@@ -31,7 +31,7 @@ uv sync
 ## Run the application
 
 ```shell
-uv run SEI
+uv run SEU
 ```
 
 Then you can open `http://localhost:8000` in your Web browser and see what is already implemented and what is still

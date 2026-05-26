@@ -9,7 +9,9 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "holm>=0.9.0",
+    "platformdirs>=4.9.6",
     "pydantic>=2.10.6",
+    "pydantic-settings>=2.14.1",
     "sid-file-format",
     "uvicorn>=0.42.0",
 ]
@@ -23,7 +25,7 @@ dev = [
 
 [project.scripts]
 sid_edit_ui = "sid_edit_ui.run:main"
-SEI = "sid_edit_ui.run:main"
+SEU = "sid_edit_ui.run:main"
 
 [tool.uv.sources]
 sid-file-format = { workspace = true }
