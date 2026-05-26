@@ -13,7 +13,7 @@ def page_content(file_name: str | None) -> Component:
         html.h1("File Management"),
         html.p(f"Current file: {file_name}" if file_name else ""),
         field_block(
-            "Upload",
+            "Load",
             html.form(
                 html.input_(
                     type="file",
@@ -22,7 +22,7 @@ def page_content(file_name: str | None) -> Component:
                     style="flex:1;min-width:200px;",
                 ),
                 html.button(
-                    "Upload file",
+                    "Load file",
                     type="submit",
                     class_="btn btn-sm",
                     style="flex-shrink:0;",
@@ -32,13 +32,13 @@ def page_content(file_name: str | None) -> Component:
                 hx_post="upload-file",
                 hx_target="#main",
                 hx_swap="innerHTML",
-                style="margin-top:0.5rem;",
+                style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap;",
             ),
         ),
         field_block(
-            "Download",
+            "Save",
             html.button(
-                "Download SID File",
+                "Save SID File",
                 class_="btn btn-sm",
                 onclick="window.location.href='/file/download-sid-file'",
             ),

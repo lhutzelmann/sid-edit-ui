@@ -58,6 +58,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                 hx_trigger="click",
                 hx_target="#main",
                 hx_swap="innerHTML",
+                style="margin-bottom:0.5rem;",
             ),
             html.form(
                 field_block(
@@ -79,6 +80,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                         flat,
                         "Mus Player",
                         [(0, "Built-in"), (1, "Compute Sidplayer")],
+                        style_="min-width:200px",
                     ),
                     select_field(
                         "flags_psid_specific",
@@ -89,6 +91,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                             (1, "PlaySID Specific"),
                             (2, "C64 Basic"),
                         ],
+                        style_="min-width:200px",
                     ),
                     select_field(
                         "flags_video_standard",
@@ -189,7 +192,7 @@ def page_content(sid_file: SIDFile, file_name: str | None) -> Component:
                     ),
                 ),
                 html.div(
-                    html.button("Save", type="submit", class_="btn btn-sm"),
+                    html.button("Apply", type="submit", class_="btn btn-sm"),
                     style="margin-top:0.5rem;",
                 ),
                 hex_display(data),
