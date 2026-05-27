@@ -6,7 +6,12 @@ from sid_edit_ui.utils import c64_video_codes_to_unicode
 
 
 def input_field(
-    name: str, data: dict, label: str, placeholder: str, type_: str = "text", error: str | None = None
+    name: str,
+    data: dict,
+    label: str,
+    placeholder: str,
+    type_: str = "text",
+    error: str | None = None,
 ):
     children = [html.label(label)]
     if error:

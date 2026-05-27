@@ -54,6 +54,7 @@ def page_content(
     file_name: str | None,
     errors: dict[str, str] | None = None,
     data: dict[str, Any] | None = None,
+    success: bool = False,
 ) -> Component:
     if not data:
         data = sid_file.model_dump()
@@ -73,6 +74,23 @@ def page_content(
                 style="margin-bottom:0.5rem;",
             ),
             html.form(
+                *(
+                    (
+                        html.div(
+                            "Please check the highlighted values.",
+                            style="color:#b91c1c;background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:0.75rem;margin-bottom:1rem;",
+                        ),
+                    )
+                    if errors
+                    else (
+                        html.div(
+                            "Changes applied successfully.",
+                            style="color:#16a34a;background:#dcfce7;border:1px solid #86efac;border-radius:8px;padding:0.75rem;margin-bottom:1rem;",
+                        ),
+                    )
+                    if success
+                    else ()
+                ),
                 field_block(
                     "Format & Version",
                     select_field(
@@ -142,7 +160,7 @@ def page_content(
                         "released",
                         flat,
                         "Release Information",
-                        "2025 Organisation",
+                        "YEAR Organisation",
                         error=_field_error(errors, "released"),
                     ),
                     vertical=True,
@@ -277,7 +295,7 @@ def page_content(
                 method="POST",
                 hx_post=".",
                 hx_target="#main",
-                hx_swap="innerHTML",
+                hx_swap="innerHTML show:top",
             ),
         ),
     )
@@ -369,7 +387,7 @@ async def handle_submit(
         save_path = _get_save_path(repo.file_name, repo.file_path)
         if save_path:
             repo.save(save_path)
-        content = page_content(result.sid_file, repo.file_name)
+        content = page_content(result.sid_file, repo.file_name, success=True)
 
     if request.headers.get("hx-request"):
         return without_layout(content)

@@ -30,6 +30,4 @@ def int_from_c64_bytes(value: bytes) -> int:
 
 
 def validated_update(model, data):
-    return model.__class__.model_validate(
-        {**model.model_dump(), **data}
-    )
+    return model.__class__.model_validate({**model.model_dump(), **data})

@@ -1,15 +1,16 @@
-from enum import StrEnum, IntEnum
-from typing import Self, Any
+from datetime import datetime
+from enum import IntEnum, StrEnum
+from typing import Any, Self
 
 from pydantic import (
     BaseModel,
     Field,
+    PlainSerializer,
+    PlainValidator,
     conint,
     constr,
-    model_validator,
     errors,
-    PlainValidator,
-    PlainSerializer,
+    model_validator,
 )
 from typing_extensions import Annotated
 
@@ -65,6 +66,9 @@ def hex_bytes_validator(val: Any) -> bytes:
 HexBytes = Annotated[
     bytes, PlainValidator(hex_bytes_validator), PlainSerializer(lambda v: v.hex())
 ]
+
+
+year = str(datetime.now().year)
 
 
 class MagicId(StrEnum):
@@ -216,7 +220,7 @@ class SIDFile(BaseModel):
         description="Author information. Should be author's real name plus handle in brackets.",
     )
     released: constr(min_length=0, max_length=32) = Field(
-        default="2025 Organisation",
+        default=f"{year} Organisation",
         description="Release information. Should be year and the releasing organisation.",
     )
 
