@@ -29,9 +29,9 @@ You are an agent specialized in the **sid-edit-ui** web application.
 | `src/sid_edit_ui/layout.py` | Root HTML layout (header/nav/footer) |
 | `src/sid_edit_ui/page.py` | Home page |
 | `src/sid_edit_ui/components.py` | Reusable form fields: `input_field`, `select_field`, `hex_field`, `number_field`, `hex_display`, `field_block` |
-| `src/sid_edit_ui/utils.py` | C64 screen code → Unicode conversion |
+| `src/sid_edit_ui/utils.py` | C64 screen code → Unicode conversion, `int_from_c64_bytes`, `validated_update` |
 | `src/sid_edit_ui/settings.py` | Pydantic settings (`Settings` class, `upload_dir` via platformdirs). Import: `from sid_edit_ui.settings import Settings`. Use `settings = Settings()` for an instance, or `from sid_edit_ui.settings import settings` for the module-level singleton. |
-| `src/sid_edit_ui/editor/page.py` | Editor page with form, `handle_submit`, `_flatten_flags`, `_parse_hex` |
+| `src/sid_edit_ui/editor/page.py` | Editor page with form, `handle_submit`, `_flatten_flags`, `_parse_hex`, `_parse_raw_form`, `_get_save_path`, `_field_error` |
 | `src/sid_edit_ui/editor/actions.py` | Holm action: `load_sid_file` (POST) |
 | `src/sid_edit_ui/repositories/sid_repository.py` | `SIDFileRepository` singleton, `UpdateResult`, `DependsSidFileRepo` |
 | `src/sid_edit_ui/about/page.py` | Async about page |
@@ -43,7 +43,15 @@ You are an agent specialized in the **sid-edit-ui** web application.
 - Layout uses `@component` decorator with `children` + `context`.
 - Form fields look like: `select_field(name, flat, label, [(val, text), ...])`.
 - The editor page flattens `flags` dict into `flags_{key}` form field names.
-- Form submit parses hex with `_parse_hex`, rebuilds `flags` dict, calls `repo.update()`.
+- Form submit parses the raw form with `_parse_raw_form()`, returns `(data, errors)`.
+  Hex fields use `_parse_hex()`, int/song fields use `int()`, all with try/except.
+- Parse errors are merged with model validation errors from `repo.update()`.
+- Field components (`input_field`, `select_field`, `hex_field`, `number_field`) accept
+  `error: str | None` and render red error text between the label and the input.
+- `page_content()` accepts optional `errors`, `data`, and `success` params.
+  On success: green notice box at form top. On error: red notice box + inline per-field errors.
+- Form uses `hx_swap="innerHTML show:top"` to scroll to top after submit.
+- Save path determined by `_get_save_path()` — keeps `.sid` extension or swaps it.
 - `SIDFileRepository` is a singleton `BaseModel` with `load`, `save`, `update`.
 - `DependsSidFileRepo` = `Annotated[SIDFileRepository, Depends(get_sid_file_repo)]`.
 - `UpdateResult` has `sid_file` + `errors` (dict or None).

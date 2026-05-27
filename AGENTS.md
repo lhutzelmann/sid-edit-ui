@@ -31,7 +31,8 @@ sid-edit-ui/
 │   ├── run.py               # Entry point (uvicorn)
 │   ├── layout.py            # Root HTML layout
 │   ├── page.py              # Home page
-│   ├── components.py        # Shared components
+│   ├── components.py        # Shared form field components (input/select/hex/number + field_block)
+│   ├── utils.py             # C64 screen code conversion, int_from_c64_bytes, validated_update
 │   ├── file/                # File management page
 │   │   ├── page.py
 │   │   ├── actions.py
