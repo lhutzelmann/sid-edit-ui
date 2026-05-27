@@ -3,6 +3,8 @@ from typing import Annotated, Any
 
 from fastapi import Depends
 from pydantic import BaseModel, ValidationError
+
+from sid_edit_ui.utils import validated_update
 from sid_file_format.sidfile import Flags, SIDFile
 
 
@@ -45,17 +47,17 @@ class SIDFileRepository(BaseModel):
 
     def update(self, data: dict[str, Any]) -> UpdateResult:
         errors_dict: dict[str, str] = {}
-        updated_copy = self.sid_file.model_copy(update=data, deep=True)
+        original_sid_file = self.sid_file.model_copy(deep=True)
         validated_sid_file: SIDFile | None = None
         try:
-            validated_sid_file = SIDFile.model_validate(updated_copy.model_dump())
+            validated_sid_file = validated_update(self.sid_file, data)
         except ValidationError as v:
             for error_details in v.errors():
                 for loc in error_details["loc"]:
                     errors_dict[loc] = error_details["msg"]
 
         if errors_dict or validated_sid_file is None:
-            return UpdateResult(sid_file=updated_copy, errors=errors_dict)
+            return UpdateResult(sid_file=original_sid_file, errors=errors_dict)
         else:
             self.sid_file = validated_sid_file
             return UpdateResult(sid_file=validated_sid_file, errors=None)

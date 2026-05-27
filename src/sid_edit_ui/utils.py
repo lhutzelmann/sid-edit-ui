@@ -27,3 +27,9 @@ def c64_video_codes_to_unicode(data: bytes) -> str:
 
 def int_from_c64_bytes(value: bytes) -> int:
     return int.from_bytes(value, byteorder="little")
+
+
+def validated_update(model, data):
+    return model.__class__.model_validate(
+        {**model.model_dump(), **data}
+    )

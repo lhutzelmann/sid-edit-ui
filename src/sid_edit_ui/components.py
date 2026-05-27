@@ -6,18 +6,21 @@ from sid_edit_ui.utils import c64_video_codes_to_unicode
 
 
 def input_field(
-    name: str, data: dict, label: str, placeholder: str, type_: str = "text"
+    name: str, data: dict, label: str, placeholder: str, type_: str = "text", error: str | None = None
 ):
-    return html.div(
-        html.label(label),
+    children = [html.label(label)]
+    if error:
+        children.append(html.span(error, style="color:#b91c1c;font-size:0.8rem;"))
+    children.append(
         html.input_(
             type=type_,
             name=name,
             value=data.get(name, ""),
             placeholder=placeholder,
             class_="input-sm",
-        ),
+        )
     )
+    return html.div(*children)
 
 
 def select_field(
@@ -27,10 +30,13 @@ def select_field(
     options: Sequence[tuple[int | str, str]],
     class_: str = "input-sm",
     style_: str = "",
+    error: str | None = None,
 ):
     current = str(data.get(name, ""))
-    return html.div(
-        html.label(label),
+    children = [html.label(label)]
+    if error:
+        children.append(html.span(error, style="color:#b91c1c;font-size:0.8rem;"))
+    children.append(
         html.select(
             *(
                 html.option(text, value=str(v), selected=XBool(str(v) == current))
@@ -39,8 +45,9 @@ def select_field(
             name=name,
             class_=class_,
             style=style_,
-        ),
+        )
     )
+    return html.div(*children)
 
 
 def hex_field(
@@ -49,6 +56,7 @@ def hex_field(
     label: str,
     num_digits: int = 4,
     class_: str = "input-sm",
+    error: str | None = None,
 ):
     value = data.get(name)
     if value is None:
@@ -57,16 +65,19 @@ def hex_field(
         hex_str = format(value, f"0{num_digits}X")
     else:
         hex_str = str(value)
-    return html.div(
-        html.label(label),
+    children = [html.label(label)]
+    if error:
+        children.append(html.span(error, style="color:#b91c1c;font-size:0.8rem;"))
+    children.append(
         html.input_(
             type="text",
             name=name,
             value=hex_str,
             class_=class_,
             placeholder="0" * num_digits,
-        ),
+        )
     )
+    return html.div(*children)
 
 
 def number_field(
@@ -76,11 +87,14 @@ def number_field(
     min: int | None = None,
     max: int | None = None,
     class_: str = "input-sm",
+    error: str | None = None,
 ):
     value = data.get(name)
     str_value = "" if value is None else str(value)
-    return html.div(
-        html.label(label),
+    children = [html.label(label)]
+    if error:
+        children.append(html.span(error, style="color:#b91c1c;font-size:0.8rem;"))
+    children.append(
         html.input_(
             type="number",
             name=name,
@@ -88,8 +102,9 @@ def number_field(
             class_=class_,
             min=min,
             max=max,
-        ),
+        )
     )
+    return html.div(*children)
 
 
 def hex_display(
