@@ -290,16 +290,10 @@ def _parse_hex(val: str) -> int:
     return int(val, 16) if val else 0
 
 
-async def handle_submit(
-    request: Request,
-    repo: DependsSidFileRepo,
-) -> Component:
-    form = await request.form()
-    raw = dict(form)
-
+def _parse_raw_form(raw: dict[str, str]) -> tuple[dict[str, Any], dict[str, str]]:
     data: dict[str, Any] = {}
+    errors: dict[str, str] = {}
 
-    errors = {}
     for key in ("name", "author", "released"):
         data[key] = raw.get(key, "")
 
@@ -343,6 +337,26 @@ async def handle_submit(
             errors[key] = str(e)
     data["flags"] = flags
 
+    return data, errors
+
+
+def _get_save_path(file_name: str | None, file_path: Path | None) -> Path | None:
+    if file_name and file_name.endswith(".sid"):
+        return file_path
+    if file_name:
+        return settings.upload_dir / (Path(file_name).stem + ".sid")
+    return None
+
+
+async def handle_submit(
+    request: Request,
+    repo: DependsSidFileRepo,
+) -> Component:
+    form = await request.form()
+    raw = dict(form)
+
+    data, errors = _parse_raw_form(raw)
+
     result: UpdateResult = repo.update(data)
     if result.errors or errors:
         errors.update(result.errors if result.errors else {})
@@ -352,15 +366,11 @@ async def handle_submit(
             result.sid_file, repo.file_name, errors=errors, data=erroneous_data
         )
     else:
-        if repo.file_name and repo.file_name.endswith(".sid"):
-            save_path = repo.file_path
-        elif repo.file_name:
-            save_path = settings.upload_dir / (Path(repo.file_name).stem + ".sid")
-        else:
-            save_path = None
+        save_path = _get_save_path(repo.file_name, repo.file_path)
         if save_path:
             repo.save(save_path)
         content = page_content(result.sid_file, repo.file_name)
+
     if request.headers.get("hx-request"):
         return without_layout(content)
     return content
