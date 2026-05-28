@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any
 
 from fastapi import Request
@@ -15,7 +14,6 @@ from sid_edit_ui.components import (
     select_field,
 )
 from sid_edit_ui.repositories.sid_repository import DependsSidFileRepo, UpdateResult
-from sid_edit_ui.settings import settings
 
 
 def page(repo: DependsSidFileRepo) -> Component:
@@ -358,14 +356,6 @@ def _parse_raw_form(raw: dict[str, str]) -> tuple[dict[str, Any], dict[str, str]
     return data, errors
 
 
-def _get_save_path(file_name: str | None, file_path: Path | None) -> Path | None:
-    if file_name and file_name.endswith(".sid"):
-        return file_path
-    if file_name:
-        return settings.upload_dir / (Path(file_name).stem + ".sid")
-    return None
-
-
 async def handle_submit(
     request: Request,
     repo: DependsSidFileRepo,
@@ -384,9 +374,7 @@ async def handle_submit(
             result.sid_file, repo.file_name, errors=errors, data=erroneous_data
         )
     else:
-        save_path = _get_save_path(repo.file_name, repo.file_path)
-        if save_path:
-            repo.save(save_path)
+        repo.save()
         content = page_content(result.sid_file, repo.file_name, success=True)
 
     if request.headers.get("hx-request"):

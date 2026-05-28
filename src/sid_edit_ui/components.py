@@ -1,7 +1,9 @@
 from collections.abc import Sequence
+from typing import Any
 
 from htmy import XBool, html
 
+from sid_edit_ui.constants import C64_DATA_BYTES_MAX
 from sid_edit_ui.utils import c64_video_codes_to_unicode
 
 
@@ -113,9 +115,9 @@ def number_field(
 
 
 def hex_display(
-    data: dict,
+    data: dict[str, Any],
     label: str = "C64 Data",
-    max_bytes: int = 4096,
+    max_bytes: int = C64_DATA_BYTES_MAX,
 ):
     raw = data.get("c64_data", b"")
     if isinstance(raw, bytes):

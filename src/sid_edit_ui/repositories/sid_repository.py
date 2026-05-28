@@ -4,6 +4,8 @@ from typing import Annotated, Any
 from fastapi import Depends
 from pydantic import BaseModel, ValidationError
 
+from sid_edit_ui.constants import DEFAULT_SID_FILE_NAME
+from sid_edit_ui.config import get_settings
 from sid_edit_ui.utils import validated_update
 from sid_file_format.sidfile import Flags, SIDFile
 
@@ -13,9 +15,14 @@ class UpdateResult(BaseModel):
     errors: dict[str, str] | None
 
 
+def _get_cached_sid_file_path(file_name: str) -> Path:
+    settings = get_settings()
+    return settings.upload_dir / (Path(file_name).stem + ".sid")
+
+
 class SIDFileRepository(BaseModel):
-    file_name: str | None = None
-    file_path: Path | None = None
+    file_name: str = DEFAULT_SID_FILE_NAME
+    file_path: Path = _get_cached_sid_file_path(DEFAULT_SID_FILE_NAME)
     sid_file: SIDFile = SIDFile(
         flags=Flags(),
         start_page=0,
@@ -33,13 +40,31 @@ class SIDFileRepository(BaseModel):
             third_sid_address=0,
         )
 
+    @classmethod
+    def create(cls) -> "SIDFileRepository":
+        """
+        Use this method to create a new SIDFileRepository instance.
+        """
+        repo = SIDFileRepository()
+        repo.save()
+        return repo
+
+    @classmethod
+    def get_cached_sid_file_path(cls, file_name: str) -> Path:
+        return _get_cached_sid_file_path(file_name)
+
     def load(self, sid_file_path: Path):
+        if not sid_file_path.exists() or not sid_file_path.is_file():
+            raise ValueError(f"No file found for {sid_file_path}")
         sid_file_data: bytes = sid_file_path.read_bytes()
         self.file_path = sid_file_path
         self.file_name = sid_file_path.name
         self.sid_file = SIDFile.from_sid(sid_file_data)
 
-    def save(self, sid_file_path: Path):
+    def save(self, sid_file_path: Path | None = None):
+        if not sid_file_path:
+            sid_file_path = self.file_path
+        sid_file_path = _get_cached_sid_file_path(sid_file_path.stem + ".sid")
         out_file_data: bytes = self.sid_file.to_sid()
         sid_file_path.write_bytes(out_file_data)
         self.file_path = sid_file_path
@@ -60,10 +85,11 @@ class SIDFileRepository(BaseModel):
             return UpdateResult(sid_file=original_sid_file, errors=errors_dict)
         else:
             self.sid_file = validated_sid_file
+            self.save()
             return UpdateResult(sid_file=validated_sid_file, errors=None)
 
 
-sid_file_repo: SIDFileRepository = SIDFileRepository()
+sid_file_repo: SIDFileRepository = SIDFileRepository.create()
 
 
 def get_sid_file_repo() -> SIDFileRepository:
