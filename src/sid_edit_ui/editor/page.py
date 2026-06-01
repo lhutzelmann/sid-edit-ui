@@ -13,7 +13,11 @@ from sid_edit_ui.components import (
     number_field,
     select_field,
 )
-from sid_edit_ui.repositories.sid_repository import DependsSidFileRepo, UpdateResult
+from sid_edit_ui.repositories.sid_repository import (
+    DependsSidFileRepo,
+    SIDFileRepository,
+    UpdateResult,
+)
 
 
 def page(repo: DependsSidFileRepo) -> Component:
@@ -57,11 +61,11 @@ def page_content(
     if not data:
         data = sid_file.model_dump()
     flat = _flatten_flags(data)
+    flat["file_name"] = file_name or ""
 
     return html.div(
         html.h1("Edit SID file"),
         html.div(
-            html.p(file_name if file_name else ""),
             html.button(
                 "Reload .sid file",
                 class_="btn btn-sm",
@@ -88,6 +92,12 @@ def page_content(
                     )
                     if success
                     else ()
+                ),
+                input_field(
+                    "file_name",
+                    flat,
+                    "File Name",
+                    "Enter the file name",
                 ),
                 field_block(
                     "Format & Version",
@@ -365,6 +375,8 @@ async def handle_submit(
 
     data, errors = _parse_raw_form(raw)
 
+    file_name = raw.get("file_name", "").strip()
+
     result: UpdateResult = repo.update(data)
     if result.errors or errors:
         errors.update(result.errors if result.errors else {})
@@ -374,6 +386,9 @@ async def handle_submit(
             result.sid_file, repo.file_name, errors=errors, data=erroneous_data
         )
     else:
+        if file_name and file_name != repo.file_name:
+            repo.file_name = file_name
+            repo.file_path = SIDFileRepository.get_cached_sid_file_path(file_name)
         repo.save()
         content = page_content(result.sid_file, repo.file_name, success=True)
 
