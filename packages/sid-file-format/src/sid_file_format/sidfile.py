@@ -180,6 +180,12 @@ class Flags(BaseModel):
 
 
 class SIDFile(BaseModel):
+    """Pydantic model representing a PSID/RSID file.
+
+    Supports versions 1 through 4 of the SID file format, including v2NG,
+    v3, and v4 extensions such as multiple SID chip addresses and
+    flags for video standard, SID model, and player type.
+    """
     format_type: MagicId = Field(
         default=MagicId.PSID,
         description="One of the two supported formats: PSID or RSID",
@@ -251,6 +257,10 @@ class SIDFile(BaseModel):
     )
 
     def data_offset_as_bytes(self) -> bytes:
+        """Return the header data offset as a 2-byte big-endian word.
+
+        Returns ``0x76`` for v1 or ``0x7C`` for v2+.
+        """
         if self.version == 1:
             return as_word(0x76)
         else:
@@ -258,6 +268,11 @@ class SIDFile(BaseModel):
 
     @model_validator(mode="after")
     def check(self) -> Self:
+        """Validate the SIDFile model after field population.
+
+        Enforces format-specific constraints for PSID vs RSID and per-version
+        rules for extended fields and SID addresses.
+        """
         if self.format_type == MagicId.RSID:
             if self.load_address > 0:
                 raise ValueError("RSID format requires load_address field to be 0.")
@@ -355,6 +370,11 @@ class SIDFile(BaseModel):
         return self
 
     def to_sid(self) -> bytes:
+        """Serialize the SIDFile model to raw SID binary data.
+
+        Returns:
+            Bytes suitable for writing as a .sid file.
+        """
         common_header: list[bytes] = [
             self.format_type.as_bytes(),
             as_word(self.version),
@@ -384,6 +404,19 @@ class SIDFile(BaseModel):
 
     @classmethod
     def from_sid(cls, sid_data: bytes):
+        """Create an SIDFile instance from raw SID binary data.
+
+        Args:
+            sid_data: Raw SID file bytes (PSID or RSID format).
+
+        Returns:
+            A validated SIDFile model parsed from the binary data.
+
+        Raises:
+            ValueError: If the data offset in the header doesn't match the expected
+                offset for the declared version, or if the parsed fields fail
+                model validation.
+        """
         format_type: MagicId = MagicId(sid_data[0x0:0x4].decode("ascii"))
         version: int = int_from_bytes(sid_data[0x4:0x6])
         data_offset: int = 0x76 if version == 1 else 0x7C
