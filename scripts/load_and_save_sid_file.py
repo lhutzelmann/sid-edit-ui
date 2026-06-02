@@ -10,3 +10,7 @@ if __name__ == "__main__":
     out_file_path = pathlib.Path("out.sid")
     sid_file_repo.save(out_file_path)
     print(f"file written to {sid_file_repo.file_path}")
+
+    prg_file_path = pathlib.Path("out.prg")
+    prg_file_path.write_bytes(sid_file_repo.sid_file.c64_data)
+    print(f"file written to {prg_file_path}")
