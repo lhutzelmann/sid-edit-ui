@@ -6,6 +6,7 @@ from htmy import Component, html
 from sid_file_format.sidfile import SIDFile
 
 from sid_edit_ui.components import (
+    binary_field,
     field_block,
     hex_display,
     hex_field,
@@ -217,6 +218,16 @@ def page_content(
                     ),
                 ),
                 field_block(
+                    "Speed",
+                    binary_field(
+                        "speed",
+                        flat,
+                        "Speed Flags (32 bits)",
+                        num_bits=32,
+                        error=_field_error(errors, "speed"),
+                    ),
+                ),
+                field_block(
                     "Free Memory Range",
                     hex_field(
                         "start_page",
@@ -339,6 +350,12 @@ def _parse_raw_form(raw: dict[str, str]) -> tuple[dict[str, Any], dict[str, str]
             data[key] = _parse_hex(raw.get(key, ""))
         except ValueError as e:
             errors[key] = str(e)
+
+    speed_raw = raw.get("speed", "").replace(" ", "")
+    try:
+        data["speed"] = int(speed_raw, 2) if speed_raw else 0
+    except ValueError as e:
+        errors["speed"] = str(e)
 
     for key in ("songs", "start_song"):
         v = raw.get(key, "")

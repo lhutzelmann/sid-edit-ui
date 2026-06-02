@@ -114,6 +114,39 @@ def number_field(
     return html.div(*children)
 
 
+def binary_field(
+    name: str,
+    data: dict,
+    label: str,
+    num_bits: int = 32,
+    class_: str = "input-sm",
+    error: str | None = None,
+):
+    value = data.get(name)
+    if isinstance(value, int):
+        bits = format(value, f"0{num_bits}b")
+    else:
+        bits = "0" * num_bits
+    groups = [bits[i : i + 4] for i in range(0, len(bits), 4)]
+    binary_str = " ".join(groups)
+    max_len = num_bits + (num_bits // 4) - 1
+    children = [html.label(label)]
+    if error:
+        children.append(html.span(error, style="color:#b91c1c;font-size:0.8rem;"))
+    children.append(
+        html.input_(
+            type="text",
+            name=name,
+            value=binary_str,
+            class_=class_,
+            maxlength=max_len,
+            placeholder=" ".join("0" * 4 for _ in range(num_bits // 4)),
+            style="font-family:monospace;width:100%;",
+        )
+    )
+    return html.div(*children, style="width:100%;")
+
+
 def hex_display(
     data: dict[str, Any],
     label: str = "C64 Data",
