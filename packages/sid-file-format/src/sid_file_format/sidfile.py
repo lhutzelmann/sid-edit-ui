@@ -183,29 +183,144 @@ class SIDFile(BaseModel):
     v3, and v4 extensions such as multiple SID chip addresses and
     flags for video standard, SID model, and player type.
     """
+
     format_type: MagicId = Field(
         default=MagicId.PSID,
         description="One of the two supported formats: PSID or RSID",
     )
-    version: Annotated[int, Field(ge=1, le=4, default=2, description="Version, also depends on number of SID chips")]
-    load_address: Annotated[int, Field(ge=0, le=0xFFFF, default=0, description="C64 memory location of the C64 data or 0 if data has load address bytes already")]
-    init_address: Annotated[int, Field(ge=0, le=0xFFFF, default=0x1000, description="Start address of the machine code subroutine that initializes a song")]
-    play_address: Annotated[int, Field(ge=0, le=0xFFFF, default=0x1003, description="Play address of the machine code subroutine that is called frequently or 0 for RSID.")]
-    songs: Annotated[int, Field(ge=1, le=0x0100, default=1, description="The number of songs/sfx that can be initialized by calling the init address.")]
-    start_song: Annotated[int, Field(ge=1, le=0x0100, default=1, description="The song number played as default.")]
-    speed: Annotated[int, Field(ge=0, le=0xFFFFFFFF, default=0, description="Speed flags for the songs. See sid file format description for details.")]
-    name: Annotated[str, Field(min_length=0, max_length=32, default="Song Name", description="Song name.")]
-    author: Annotated[str, Field(min_length=0, max_length=32, default="First Last (Handle)", description="Author information. Should be author's real name plus handle in brackets.")]
-    released: Annotated[str, Field(min_length=0, max_length=32, default=f"{year} Organisation", description="Release information. Should be year and the releasing organisation.")]
+    version: Annotated[
+        int,
+        Field(
+            ge=1,
+            le=4,
+            default=2,
+            description="Version, also depends on number of SID chips",
+        ),
+    ]
+    load_address: Annotated[
+        int,
+        Field(
+            ge=0,
+            le=0xFFFF,
+            default=0,
+            description="C64 memory location of the C64 data or 0 if data has load address bytes already",
+        ),
+    ]
+    init_address: Annotated[
+        int,
+        Field(
+            ge=0,
+            le=0xFFFF,
+            default=0x1000,
+            description="Start address of the machine code subroutine that initializes a song",
+        ),
+    ]
+    play_address: Annotated[
+        int,
+        Field(
+            ge=0,
+            le=0xFFFF,
+            default=0x1003,
+            description="Play address of the machine code subroutine that is called frequently or 0 for RSID.",
+        ),
+    ]
+    songs: Annotated[
+        int,
+        Field(
+            ge=1,
+            le=0x0100,
+            default=1,
+            description="The number of songs/sfx that can be initialized by calling the init address.",
+        ),
+    ]
+    start_song: Annotated[
+        int,
+        Field(
+            ge=1, le=0x0100, default=1, description="The song number played as default."
+        ),
+    ]
+    speed: Annotated[
+        int,
+        Field(
+            ge=0,
+            le=0xFFFFFFFF,
+            default=0,
+            description="Speed flags for the songs. See sid file format description for details.",
+        ),
+    ]
+    name: Annotated[
+        str,
+        Field(
+            min_length=0, max_length=32, default="Song Name", description="Song name."
+        ),
+    ]
+    author: Annotated[
+        str,
+        Field(
+            min_length=0,
+            max_length=32,
+            default="First Last (Handle)",
+            description="Author information. Should be author's real name plus handle in brackets.",
+        ),
+    ]
+    released: Annotated[
+        str,
+        Field(
+            min_length=0,
+            max_length=32,
+            default=f"{year} Organisation",
+            description="Release information. Should be year and the releasing organisation.",
+        ),
+    ]
 
     # v2, v3 and v4 extensions
     flags: Flags | None = Field(
         default=None, description="Bitfield with format specific flags."
     )
-    start_page: Annotated[int, Field(ge=0, le=0xFF, default=None, description="Relocation start page, free to use start page, e.g. for relocation purposes. See docs for details")] | None
-    page_length: Annotated[int, Field(ge=0, le=0xFF, default=None, description="Amount of free to use pages after the start_page. See docs for details")] | None
-    second_sid_address: Annotated[int, Field(ge=0, le=0xFF, default=None, description="Low byte of second SID address for v3+ or 0 for v2NG.")] | None
-    third_sid_address: Annotated[int, Field(ge=0, le=0xFF, default=None, description="Low byte of third SID address for v4 or 0 for v2NG and v3.")] | None
+    start_page: (
+        Annotated[
+            int,
+            Field(
+                ge=0,
+                le=0xFF,
+                description="Relocation start page, free to use start page, e.g. for relocation purposes. See docs for details",
+            ),
+        ]
+        | None
+    )
+    page_length: (
+        Annotated[
+            int,
+            Field(
+                ge=0,
+                le=0xFF,
+                description="Amount of free to use pages after the start_page. See docs for details",
+            ),
+        ]
+        | None
+    )
+    second_sid_address: (
+        Annotated[
+            int,
+            Field(
+                ge=0,
+                le=0xFF,
+                description="Low byte of second SID address for v3+ or 0 for v2NG.",
+            ),
+        ]
+        | None
+    )
+    third_sid_address: (
+        Annotated[
+            int,
+            Field(
+                ge=0,
+                le=0xFF,
+                description="Low byte of third SID address for v4 or 0 for v2NG and v3.",
+            ),
+        ]
+        | None
+    )
 
     c64_data: HexBytes = Field(
         default=b"\0\0",
@@ -275,20 +390,16 @@ class SIDFile(BaseModel):
 
     def _check_v1_fields(self):
         if (
-                self.flags is not None
-                or self.start_page is not None
-                or self.page_length is not None
-                or self.second_sid_address is not None
-                or self.third_sid_address is not None
+            self.flags is not None
+            or self.start_page is not None
+            or self.page_length is not None
+            or self.second_sid_address is not None
+            or self.third_sid_address is not None
         ):
             raise ValueError("v1 does not support extended fields.")
 
     def _check_v2_fields(self):
-        if (
-                self.flags is None
-                or self.start_page is None
-                or self.page_length is None
-        ):
+        if self.flags is None or self.start_page is None or self.page_length is None:
             raise ValueError("PSID >= v2NG requires extended fields.")
         if self.flags.sid_model_2nd_sid != SIDModel.UNKNOWN:
             raise ValueError("v2NG must not have second SID model set.")
@@ -301,17 +412,17 @@ class SIDFile(BaseModel):
 
     def _check_v3_fields(self):
         if (
-                self.flags is None
-                or self.start_page is None
-                or self.page_length is None
-                or self.second_sid_address is None
+            self.flags is None
+            or self.start_page is None
+            or self.page_length is None
+            or self.second_sid_address is None
         ):
             raise ValueError("PSID >= v2NG requires extended fields.")
         if (
-                not self.second_sid_address == 0
-                and not (0x42 <= self.second_sid_address <= 0x7E)
-                and not (0xE0 <= self.second_sid_address <= 0xFE)
-                and not self.second_sid_address & 1 == 0
+            not self.second_sid_address == 0
+            and not (0x42 <= self.second_sid_address <= 0x7E)
+            and not (0xE0 <= self.second_sid_address <= 0xFE)
+            and not self.second_sid_address & 1 == 0
         ):
             raise ValueError("Invalid address for second SID.")
         if self.flags.sid_model_3rd_sid != SIDModel.UNKNOWN:
@@ -321,25 +432,25 @@ class SIDFile(BaseModel):
 
     def _check_v4_fields(self):
         if (
-                self.flags is None
-                or self.start_page is None
-                or self.page_length is None
-                or self.second_sid_address is None
-                or self.third_sid_address is None
+            self.flags is None
+            or self.start_page is None
+            or self.page_length is None
+            or self.second_sid_address is None
+            or self.third_sid_address is None
         ):
             raise ValueError("PSID >= v2NG requires extended fields.")
         if (
-                not self.second_sid_address == 0
-                and not (0x42 <= self.second_sid_address <= 0x7E)
-                and not (0xE0 <= self.second_sid_address <= 0xFE)
-                and not self.second_sid_address & 1 == 0
+            not self.second_sid_address == 0
+            and not (0x42 <= self.second_sid_address <= 0x7E)
+            and not (0xE0 <= self.second_sid_address <= 0xFE)
+            and not self.second_sid_address & 1 == 0
         ):
             raise ValueError("Invalid address for second SID.")
         if (
-                not self.third_sid_address == 0
-                and not (0x42 <= self.third_sid_address <= 0x7E)
-                and not (0xE0 <= self.third_sid_address <= 0xFE)
-                and not self.third_sid_address & 1 == 0
+            not self.third_sid_address == 0
+            and not (0x42 <= self.third_sid_address <= 0x7E)
+            and not (0xE0 <= self.third_sid_address <= 0xFE)
+            and not self.third_sid_address & 1 == 0
         ):
             raise ValueError("Invalid address for third SID.")
 
