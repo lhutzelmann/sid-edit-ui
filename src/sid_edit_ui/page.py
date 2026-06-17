@@ -1,7 +1,7 @@
 from htmy import Component, html
 
 # Static metadata for this page
-metadata = {"title": "Home | My App"}
+metadata = {"title": "Home | SID Edit UI"}
 
 
 def page() -> Component:
