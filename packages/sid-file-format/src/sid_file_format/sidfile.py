@@ -81,6 +81,14 @@ class MusPlayer(IntEnum):
     COMPUTE_SIDPLAYER = 1
 
 
+class Version(IntEnum):
+    V1 = 1
+    V2NG = 2
+    V3 = 3
+    V4 = 4
+    V4E = 0x4e
+
+
 class PSIDSpecific(IntEnum):
     C64_COMPATIBLE = 0
     PLAYSID_SPECIFIC = 1  # PSID format, PlaySID samples
@@ -182,6 +190,7 @@ class SIDFile(BaseModel):
     Supports versions 1 through 4 of the SID file format, including v2NG,
     v3, and v4 extensions such as multiple SID chip addresses and
     flags for video standard, SID model, and player type.
+    V4E for fully flexible amount of SIDs is also supported.
     """
 
     format_type: MagicId = Field(
@@ -191,9 +200,7 @@ class SIDFile(BaseModel):
     version: Annotated[
         int,
         Field(
-            ge=1,
-            le=4,
-            default=2,
+            default=Version.V2NG,
             description="Version, also depends on number of SID chips",
         ),
     ]
@@ -332,7 +339,7 @@ class SIDFile(BaseModel):
 
         Returns ``0x76`` for v1 or ``0x7C`` for v2+.
         """
-        if self.version == 1:
+        if self.version == Version.V1:
             return as_word(0x76)
         else:
             return as_word(0x7C)
@@ -344,14 +351,16 @@ class SIDFile(BaseModel):
         Enforces format-specific constraints for PSID vs RSID and per-version
         rules for extended fields and SID addresses.
         """
-        if self.version == 1:
+        if self.version == Version.V1:
             self._check_v1_fields()
-        elif self.version == 2:
+        elif self.version == Version.V2NG:
             self._check_v2_fields()
-        elif self.version == 3:
+        elif self.version == Version.V3:
             self._check_v3_fields()
-        elif self.version == 4:
+        elif self.version == Version.V4:
             self._check_v4_fields()
+        elif self.version == Version.V4E:
+            self._check_v4e_fields()
         else:
             raise ValueError("Unsupported SID format version.")
 
@@ -360,7 +369,7 @@ class SIDFile(BaseModel):
                 raise ValueError("RSID format requires load_address field to be 0.")
             if (
                 self.init_address == 0
-                and self.version > 1
+                and self.version >= Version.V2NG
                 and self.flags
                 and self.flags.psid_specific != PSIDSpecific.C64_BASIC
             ):
@@ -374,14 +383,14 @@ class SIDFile(BaseModel):
             if self.speed != 0:
                 raise ValueError("RSID does not allow speed != 0.")
             if (
-                self.version > 1
+                self.version >= Version.V2NG
                 and self.flags
                 and self.flags.psid_specific == PSIDSpecific.PLAYSID_SPECIFIC
             ):
                 raise ValueError("RSID does not support PlaySID samples.")
         else:
             if (
-                self.version > 1
+                self.version >= Version.V2NG
                 and self.flags
                 and self.flags.psid_specific == PSIDSpecific.C64_BASIC
             ):
@@ -454,6 +463,10 @@ class SIDFile(BaseModel):
         ):
             raise ValueError("Invalid address for third SID.")
 
+    def _check_v4e_fields(self):
+        # TODO
+        pass
+
     def to_sid(self) -> bytes:
         """Serialize the SIDFile model to raw SID binary data.
 
@@ -475,7 +488,7 @@ class SIDFile(BaseModel):
             as_32_byte_string(self.released),
         ]
         additional_header: list[bytes] = []
-        if self.version > 1:
+        if self.version >= Version.V2NG:
             additional_header += [
                 self.flags.to_word(),
                 as_byte(self.start_page),
@@ -504,7 +517,7 @@ class SIDFile(BaseModel):
         """
         format_type: MagicId = MagicId(sid_data[0x0:0x4].decode("ascii"))
         version: int = int_from_bytes(sid_data[0x4:0x6])
-        data_offset: int = 0x76 if version == 1 else 0x7C
+        data_offset: int = 0x76 if version == Version.V1 else 0x7C
         sid_file_data_offset: int = int_from_bytes(sid_data[0x6:0x8])
         if sid_file_data_offset != data_offset:
             raise ValueError(
@@ -527,7 +540,7 @@ class SIDFile(BaseModel):
             author=str_from_bytes(sid_data[0x36:0x56]),
             released=str_from_bytes(sid_data[0x56:0x76]),
         )
-        if version > 1:
+        if version >= Version.V2NG:
             flags = Flags.from_word(
                 sid_data[0x76:0x78], is_rsid=format_type == MagicId.RSID
             )
