@@ -113,7 +113,7 @@ def page_content(
                         "version",
                         flat,
                         "Version",
-                        [(1, "1"), (2, "2"), (3, "3"), (4, "4")],
+                        [(1, "V1"), (2, "V2"), (3, "V3"), (4, "V4"), (0x4e, "V4E")],
                         error=_field_error(errors, "version"),
                     ),
                     select_field(

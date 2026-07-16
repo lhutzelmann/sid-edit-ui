@@ -83,7 +83,7 @@ class MusPlayer(IntEnum):
 
 class Version(IntEnum):
     V1 = 1
-    V2NG = 2
+    V2 = 2
     V3 = 3
     V4 = 4
     V4E = 0x4e
@@ -200,7 +200,7 @@ class SIDFile(BaseModel):
     version: Annotated[
         int,
         Field(
-            default=Version.V2NG,
+            default=Version.V2,
             description="Version, also depends on number of SID chips",
         ),
     ]
@@ -353,7 +353,7 @@ class SIDFile(BaseModel):
         """
         if self.version == Version.V1:
             self._check_v1_fields()
-        elif self.version == Version.V2NG:
+        elif self.version == Version.V2:
             self._check_v2_fields()
         elif self.version == Version.V3:
             self._check_v3_fields()
@@ -369,7 +369,7 @@ class SIDFile(BaseModel):
                 raise ValueError("RSID format requires load_address field to be 0.")
             if (
                 self.init_address == 0
-                and self.version >= Version.V2NG
+                and self.version >= Version.V2
                 and self.flags
                 and self.flags.psid_specific != PSIDSpecific.C64_BASIC
             ):
@@ -383,14 +383,14 @@ class SIDFile(BaseModel):
             if self.speed != 0:
                 raise ValueError("RSID does not allow speed != 0.")
             if (
-                self.version >= Version.V2NG
+                self.version >= Version.V2
                 and self.flags
                 and self.flags.psid_specific == PSIDSpecific.PLAYSID_SPECIFIC
             ):
                 raise ValueError("RSID does not support PlaySID samples.")
         else:
             if (
-                self.version >= Version.V2NG
+                self.version >= Version.V2
                 and self.flags
                 and self.flags.psid_specific == PSIDSpecific.C64_BASIC
             ):
@@ -488,7 +488,7 @@ class SIDFile(BaseModel):
             as_32_byte_string(self.released),
         ]
         additional_header: list[bytes] = []
-        if self.version >= Version.V2NG:
+        if self.version >= Version.V2:
             additional_header += [
                 self.flags.to_word(),
                 as_byte(self.start_page),
@@ -540,7 +540,7 @@ class SIDFile(BaseModel):
             author=str_from_bytes(sid_data[0x36:0x56]),
             released=str_from_bytes(sid_data[0x56:0x76]),
         )
-        if version >= Version.V2NG:
+        if version >= Version.V2:
             flags = Flags.from_word(
                 sid_data[0x76:0x78], is_rsid=format_type == MagicId.RSID
             )
